@@ -137,9 +137,7 @@ def _get_docker():
               '{1}.dkr.ecr.{0}.amazonaws.com'.format(_get_region(),
                                                      _get_aws_id())
 
-    result = subprocess.check_output(command, shell=True).decode('utf-8')
-
-    return result
+    return subprocess.check_output(command, shell=True).decode('utf-8')
 
 
 def _update_build():
@@ -161,12 +159,9 @@ def _shell_app(container='django_python'):
     if not task:
         return
 
-    command = '/usr/local/bin/aws ecs execute-command ' \
-              '--cluster martinpauleve-test ' \
-              '--container {} --interactive ' \
-              '--command "/bin/sh" --task {}'.format(container, task)
+    command = f'/usr/local/bin/aws ecs execute-command --cluster martinpauleve-test --container {container} --interactive --command "/bin/sh" --task {task}'
 
-    print('Executing: {}'.format(command))
+    print(f'Executing: {command}')
 
     shell = LocalShell()
     shell.run(command)
@@ -206,8 +201,7 @@ def _get_aws_id():
         '"Account"'.split(' ')).decode('utf-8')
 
     result = str(result).replace('"', '')
-    result = str(result).replace('\n', '')
-    return result
+    return result.replace('\n', '')
 
 
 def _get_prefix():
@@ -221,13 +215,12 @@ def _get_region():
         'aws configure get region'.split(' ')).decode('utf-8')
 
     result = str(result).replace('\n', '')
-    return str(result)
+    return result
 
 
 def _get_terraform_config():
     with open("AWS/terraform.tfvars", "r") as f:
-        data = hcl.load(f)
-        return data
+        return hcl.load(f)
 
 
 @click.command()
